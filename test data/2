@@ -1,0 +1,56 @@
+const AluInstructionEnum = enum {
+    inp,
+    add,
+    mul,
+    div,
+    mod,
+    eql,
+};
+
+pub fn main() !void {
+    const stdout = std.io.getStdOut().writer();
+    var iter = std.mem.split(u8, toParse, "\n");
+
+
+    const map1 = std.ComptimeStringMap(AluInstructionEnum, .{
+        .{ "inp", .inp },
+        .{ "add", .add },
+        .{ "mul", .mul },
+        .{ "div", .div },
+        .{ "mod", .mod },
+        .{ "eql", .eql },
+    });
+    var i_: usize = 0;
+    while (iter.next()) |line| : (i_+=1) {
+
+        if (map1.get(line[0..3])) |alu_instruction| {
+            switch (alu_instruction) {
+                .inp => {
+                    try stdout.print("0\n", .{});
+                },
+                .add => {
+                    try stdout.print("1\n", .{});
+                },
+                .mul => {
+                    try stdout.print("2\n", .{});
+                },
+                .div => {
+                    try stdout.print("3\n", .{});
+                },
+                .mod => {
+                    try stdout.print("4\n", .{});
+                },
+                .eql => {
+                    try stdout.print("5\n", .{});
+                },
+            }
+        } else {
+            try stdout.print("{s}\n", .{line});
+        }
+
+
+    // while (iter.next()) |_| : (i_+=1) {
+        // try stdout.print("{s}\n", .{line});
+        // try stdout.print("{d}\n", .{i_});
+    }
+}

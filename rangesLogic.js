@@ -53,7 +53,7 @@ exports.getRanges = function getRanges(str) {
             case '%':{
                 const startIndex = c
                 c++
-                const execArray = /^.*?%/.exec(str.slice(c))
+                const execArray = /^[_a-zA-Z][_a-zA-Z0-9]*?%/.exec(str.slice(c))
                 if (!execArray) {
                     continue
                 }
@@ -115,6 +115,10 @@ exports.getRanges = function getRanges(str) {
             case ']':
             case '}':
                 c++
+                if (!stack.length) {
+                    console.log(`more ")" than "(": ${c}`)
+                    continue
+                }
                 childArr = stack.pop()
                 childArr[childArr.length - 1][1] = c
                 continue

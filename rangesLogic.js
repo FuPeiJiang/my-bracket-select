@@ -77,11 +77,29 @@ exports.getRanges = function getRanges(str) {
             // comments
             case '/':
                 c++
-                if (str[c] === '/') {
-                    const lastIndex = /.*?(?:\n|$)/.exec(str.slice(c))[0].length + c
-                    c = lastIndex
+                switch (str[c]) {
+                    case '/':{
+                        const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
+                        c = lastIndex
+                        continue
+                    }
+                    case '*':{
+                        const lastIndex = /[\s\S]*?\*\//.exec(str.slice(c))[0].length + c
+                        c = lastIndex
+                        continue
+                    }
+                    default:{
+                        const execArray = /^(?:\\.|.)*?\//.exec(str.slice(c))
+                        if (!execArray) {
+                            continue
+                        }
+                        const startIndex = c - 1
+                        const lastIndex = execArray[0].length + c
+                        childArr.push([startIndex, lastIndex, []])
+                        c = lastIndex
+                        continue
+                    }
                 }
-                continue
             // brackets
             case '(':
             case '[':

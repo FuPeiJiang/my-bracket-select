@@ -1,3 +1,18 @@
+let doubleQuoteRegex
+const doubleQuoteRegex_by_languageId = {
+    "ahk":/^(?:""|[^"])*"/,
+    "ahk2":/^(?:`.|.)*?"/,
+}
+let singleQuoteRegex
+const singleQuoteRegex_by_languageId = {
+    "ahk2":/^(?:`.|.)*?'/,
+}
+
+exports.setRegexByLanguageId = function setRegexByLanguageId(languageId) {
+    doubleQuoteRegex = doubleQuoteRegex_by_languageId[languageId] || /^(?:\\.|.)*?"/
+    singleQuoteRegex = singleQuoteRegex_by_languageId[languageId] || /^(?:\\.|.)*?'/
+}
+
 /**
  * @param {string} str
  */
@@ -14,7 +29,7 @@ exports.getRanges = function getRanges(str) {
             case '"':{
                 const startIndex = c
                 c++
-                const execArray = /^.*?"/.exec(str.slice(c))
+                const execArray = doubleQuoteRegex.exec(str.slice(c))
                 if (!execArray) {
                     continue
                 }
@@ -26,7 +41,7 @@ exports.getRanges = function getRanges(str) {
             case '\'':{
                 const startIndex = c
                 c++
-                const execArray = /^.*?'/.exec(str.slice(c))
+                const execArray = singleQuoteRegex.exec(str.slice(c))
                 if (!execArray) {
                     continue
                 }
@@ -39,6 +54,18 @@ exports.getRanges = function getRanges(str) {
                 const startIndex = c
                 c++
                 const execArray = /^.*?%/.exec(str.slice(c))
+                if (!execArray) {
+                    continue
+                }
+                const lastIndex = execArray[0].length + c
+                childArr.push([startIndex, lastIndex, []])
+                c = lastIndex
+                continue
+            }
+            case '|':{
+                const startIndex = c
+                c++
+                const execArray = /^.*?\|/.exec(str.slice(c))
                 if (!execArray) {
                     continue
                 }

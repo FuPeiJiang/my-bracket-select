@@ -1,134 +1,398 @@
-let doubleQuoteRegex
-const doubleQuoteRegex_by_languageId = {
-    "ahk":/^(?:""|[^"])*"/,
-    "ahk2":/^(?:`.|.)*?"/,
-}
-let singleQuoteRegex
-const singleQuoteRegex_by_languageId = {
-    "ahk2":/^(?:`.|.)*?'/,
-}
-
-exports.setRegexByLanguageId = function setRegexByLanguageId(languageId) {
-    doubleQuoteRegex = doubleQuoteRegex_by_languageId[languageId] || /^(?:\\.|.)*?"/
-    singleQuoteRegex = singleQuoteRegex_by_languageId[languageId] || /^(?:\\.|.)*?'/
-}
-
 /**
- * @param {string} str
+ * @param {string} languageId
  */
-exports.getRanges = function getRanges(str) {
-    let c = 0
-    const len = str.length
+exports.getGetRanges = function getGetRanges(languageId) {
+    switch (languageId) {
+        case "ahk":
+            /**
+             * @param {string} str
+             */
+            return function getRanges(str) {
+                let c = 0
+                const len = str.length
 
-    let childArr = []
-    const stack = []
+                let childArr = []
+                const stack = []
 
-    while (c < len) {
-        switch (str[c]) {
-            // strings
-            case '"':{
-                const startIndex = c
-                c++
-                const execArray = doubleQuoteRegex.exec(str.slice(c))
-                if (!execArray) {
-                    continue
-                }
-                const lastIndex = execArray[0].length + c
-                childArr.push([startIndex, lastIndex, []])
-                c = lastIndex
-                continue
-            }
-            case '\'':{
-                const startIndex = c
-                c++
-                const execArray = singleQuoteRegex.exec(str.slice(c))
-                if (!execArray) {
-                    continue
-                }
-                const lastIndex = execArray[0].length + c
-                childArr.push([startIndex, lastIndex, []])
-                c = lastIndex
-                continue
-            }
-            case '%':{
-                const startIndex = c
-                c++
-                const execArray = /^[_a-zA-Z][_a-zA-Z0-9]*?%/.exec(str.slice(c))
-                if (!execArray) {
-                    continue
-                }
-                const lastIndex = execArray[0].length + c
-                childArr.push([startIndex, lastIndex, []])
-                c = lastIndex
-                continue
-            }
-            case '|':{
-                const startIndex = c
-                c++
-                const execArray = /^.*?\|/.exec(str.slice(c))
-                if (!execArray) {
-                    continue
-                }
-                const lastIndex = execArray[0].length + c
-                childArr.push([startIndex, lastIndex, []])
-                c = lastIndex
-                continue
-            }
-            // comments
-            case '/':
-                c++
-                switch (str[c]) {
-                    case '/':{
-                        const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
-                        c = lastIndex
-                        continue
-                    }
-                    case '*':{
-                        const lastIndex = /[\s\S]*?\*\//.exec(str.slice(c))[0].length + c
-                        c = lastIndex
-                        continue
-                    }
-                    default:{
-                        const execArray = /^(?:\\.|.)*?\//.exec(str.slice(c))
-                        if (!execArray) {
+                while (c < len) {
+                    switch (str[c]) {
+                        // strings
+                        case '"':{
+                            const startIndex = c
+                            c++
+                            const execArray = /^(?:""|[^"])*"/.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
                             continue
                         }
-                        const startIndex = c - 1
-                        const lastIndex = execArray[0].length + c
-                        childArr.push([startIndex, lastIndex, []])
-                        c = lastIndex
-                        continue
+                        case '%':{
+                            const startIndex = c
+                            c++
+                            const execArray = /^[_a-zA-Z][_a-zA-Z0-9]*?%/.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
+                            continue
+                        }
+                        // comments
+                        case '/':
+                            c++
+                            switch (str[c]) {
+                                case '/':{
+                                    const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
+                                    c = lastIndex
+                                    continue
+                                }
+                                case '*':{
+                                    const lastIndex = /[\s\S]*?\*\//.exec(str.slice(c))[0].length + c
+                                    c = lastIndex
+                                    continue
+                                }
+                                default:{
+                                    continue
+                                }
+                            }
+                        case ";":
+                            c++
+                            if (c === 1 || str[c - 2] === ' ' || str[c - 2] === '\n' || str[c - 2] === '\t') {
+                                const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
+                                c = lastIndex
+                            }
+                            continue
+                        // brackets
+                        case '(':
+                        case '[':
+                        case '{':
+                            const tempChildArr = []
+                            const tempArr = [c, null, tempChildArr]
+                            childArr.push(tempArr)
+                            stack.push(childArr)
+                            childArr = tempChildArr
+                            c++
+                            continue
+                        case ')':
+                        case ']':
+                        case '}':
+                            c++
+                            if (!stack.length) {
+                                console.log(`more ")" than "(": ${c}`)
+                                continue
+                            }
+                            childArr = stack.pop()
+                            childArr[childArr.length - 1][1] = c
+                            continue
+                        default:
+                            c++
+                            continue
                     }
                 }
-            // brackets
-            case '(':
-            case '[':
-            case '{':
-                const tempChildArr = []
-                const tempArr = [c, null, tempChildArr]
-                childArr.push(tempArr)
-                stack.push(childArr)
-                childArr = tempChildArr
-                c++
-                continue
-            case ')':
-            case ']':
-            case '}':
-                c++
-                if (!stack.length) {
-                    console.log(`more ")" than "(": ${c}`)
-                    continue
+
+                return childArr
+            }
+        case "ah2":
+            /**
+             * @param {string} str
+             */
+            return function getRanges(str) {
+                let c = 0
+                const len = str.length
+
+                let childArr = []
+                const stack = []
+
+                while (c < len) {
+                    switch (str[c]) {
+                        // strings
+                        case '"':{
+                            const startIndex = c
+                            c++
+                            const execArray = /^(?:`.|.)*?"/.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
+                            continue
+                        }
+                        case '\'':{
+                            const startIndex = c
+                            c++
+                            const execArray = /^(?:`.|.)*?'/.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
+                            continue
+                        }
+                        case '%':{
+                            const startIndex = c
+                            c++
+                            const execArray = /^[_a-zA-Z][_a-zA-Z0-9]*?%/.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
+                            continue
+                        }
+                        // comments
+                        case '/':
+                            c++
+                            switch (str[c]) {
+                                case '/':{
+                                    const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
+                                    c = lastIndex
+                                    continue
+                                }
+                                case '*':{
+                                    const lastIndex = /[\s\S]*?\*\//.exec(str.slice(c))[0].length + c
+                                    c = lastIndex
+                                    continue
+                                }
+                                default:{
+                                    continue
+                                }
+                            }
+                        case ";":
+                            c++
+                            if (c === 1 || str[c - 2] === ' ' || str[c - 2] === '\n' || str[c - 2] === '\t') {
+                                const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
+                                c = lastIndex
+                            }
+                            continue
+                        // brackets
+                        case '(':
+                        case '[':
+                        case '{':
+                            const tempChildArr = []
+                            const tempArr = [c, null, tempChildArr]
+                            childArr.push(tempArr)
+                            stack.push(childArr)
+                            childArr = tempChildArr
+                            c++
+                            continue
+                        case ')':
+                        case ']':
+                        case '}':
+                            c++
+                            if (!stack.length) {
+                                console.log(`more ")" than "(": ${c}`)
+                                continue
+                            }
+                            childArr = stack.pop()
+                            childArr[childArr.length - 1][1] = c
+                            continue
+                        default:
+                            c++
+                            continue
+                    }
                 }
-                childArr = stack.pop()
-                childArr[childArr.length - 1][1] = c
-                continue
-            default:
-                c++
-                continue
-        }
+
+                return childArr
+            }
+        case "zig":
+            /**
+             * @param {string} str
+             */
+            return function getRanges(str) {
+                let c = 0
+                const len = str.length
+
+                let childArr = []
+                const stack = []
+
+                while (c < len) {
+                    switch (str[c]) {
+                        // strings
+                        case '"':{
+                            const startIndex = c
+                            c++
+                            const execArray = /^(?:\\.|.)*?"/.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
+                            continue
+                        }
+                        case '\'':{
+                            const startIndex = c
+                            c++
+                            const execArray = /^(?:\\.|.)*?'/.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
+                            continue
+                        }
+                        case '|':{
+                            const startIndex = c
+                            c++
+                            const execArray = /^.*?\|/.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
+                            continue
+                        }
+                        // comments
+                        case '/':
+                            c++
+                            switch (str[c]) {
+                                case '/':{
+                                    const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
+                                    c = lastIndex
+                                    continue
+                                }
+                                default:{
+                                    continue
+                                }
+                            }
+                            // brackets
+                        case '(':
+                        case '[':
+                        case '{':
+                            const tempChildArr = []
+                            const tempArr = [c, null, tempChildArr]
+                            childArr.push(tempArr)
+                            stack.push(childArr)
+                            childArr = tempChildArr
+                            c++
+                            continue
+                        case ')':
+                        case ']':
+                        case '}':
+                            c++
+                            if (!stack.length) {
+                                console.log(`more ")" than "(": ${c}`)
+                                continue
+                            }
+                            childArr = stack.pop()
+                            childArr[childArr.length - 1][1] = c
+                            continue
+                        default:
+                            c++
+                            continue
+                    }
+                }
+
+                return childArr
+            }
+        default: //default is js
+            /**
+             * @param {string} str
+             */
+            return function getRanges(str) {
+                let c = 0
+                const len = str.length
+
+                let childArr = []
+                const stack = []
+
+                while (c < len) {
+                    switch (str[c]) {
+                        // strings
+                        case '"':{
+                            const startIndex = c
+                            c++
+                            const execArray = doubleQuoteRegex.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
+                            continue
+                        }
+                        case '\'':{
+                            const startIndex = c
+                            c++
+                            const execArray = singleQuoteRegex.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
+                            continue
+                        }
+                        // comments
+                        case '/':
+                            c++
+                            switch (str[c]) {
+                                case '/':{
+                                    const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
+                                    c = lastIndex
+                                    continue
+                                }
+                                case '*':{
+                                    const lastIndex = /[\s\S]*?\*\//.exec(str.slice(c))[0].length + c
+                                    c = lastIndex
+                                    continue
+                                }
+                                default:{
+                                    //regex
+                                    const execArray = /^(?:\\.|.)*?\//.exec(str.slice(c))
+                                    if (!execArray) {
+                                        continue
+                                    }
+                                    const startIndex = c - 1
+                                    const lastIndex = execArray[0].length + c
+                                    childArr.push([startIndex, lastIndex, []])
+                                    c = lastIndex
+                                    continue
+                                }
+                            }
+                        // brackets
+                        case '(':
+                        case '[':
+                        case '{':
+                            const tempChildArr = []
+                            const tempArr = [c, null, tempChildArr]
+                            childArr.push(tempArr)
+                            stack.push(childArr)
+                            childArr = tempChildArr
+                            c++
+                            continue
+                        case ')':
+                        case ']':
+                        case '}':
+                            c++
+                            if (!stack.length) {
+                                console.log(`more ")" than "(": ${c}`)
+                                continue
+                            }
+                            childArr = stack.pop()
+                            childArr[childArr.length - 1][1] = c
+                            continue
+                        default:
+                            c++
+                            continue
+                    }
+                }
+
+                return childArr
+            }
     }
 
-    return childArr
+
+
 }
 
 exports.searchRange = function searchRange(ranges, offset) {

@@ -1,9 +1,10 @@
-const {setRegexByLanguageId, getRanges, searchRange} = require('./rangesLogic')
+const {getGetRanges, searchRange} = require('./rangesLogic')
 const fs = require('fs')
 
 const util = require('util')
 
-setRegexByLanguageId('')
+const getRanges = getGetRanges('')
+
 // console.log(getRanges(' "hello" '))
 // console.log(getRanges(fs.readFileSync('./test data/1').toString()))
 // const ranges = getRanges(fs.readFileSync('./test data/2').toString())

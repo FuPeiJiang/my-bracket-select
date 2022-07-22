@@ -311,7 +311,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                         case '"':{
                             const startIndex = c
                             c++
-                            const execArray = doubleQuoteRegex.exec(str.slice(c))
+                            const execArray = /^(?:\\.|.)*?"/.exec(str.slice(c))
                             if (!execArray) {
                                 continue
                             }
@@ -323,7 +323,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                         case '\'':{
                             const startIndex = c
                             c++
-                            const execArray = singleQuoteRegex.exec(str.slice(c))
+                            const execArray = /^(?:\\.|.)*?'/.exec(str.slice(c))
                             if (!execArray) {
                                 continue
                             }

@@ -96,7 +96,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
 
                 return childArr
             }
-        case "ah2":
+        case "ahk2":
             /**
              * @param {string} str
              */

@@ -1,6 +1,7 @@
 {
 	"name": "my-bracket-select",
 	"displayName": "my-bracket-select",
+	"repository": "none",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -22,7 +23,8 @@
 		]
 	},
 	"scripts": {
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"install": "vsce package -o my-bracket-select.vsix && code --install-extension my-bracket-select.vsix"
 	},
 	"devDependencies": {
 		"@types/node": "16.x",

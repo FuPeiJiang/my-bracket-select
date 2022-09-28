@@ -294,7 +294,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
 
                 return childArr
             }
-        default: //default is js
+        default: //default is "js":
             /**
              * @param {string} str
              */
@@ -324,6 +324,18 @@ exports.getGetRanges = function getGetRanges(languageId) {
                             const startIndex = c
                             c++
                             const execArray = /^(?:\\.|.)*?'/.exec(str.slice(c))
+                            if (!execArray) {
+                                continue
+                            }
+                            const lastIndex = execArray[0].length + c
+                            childArr.push([startIndex, lastIndex, []])
+                            c = lastIndex
+                            continue
+                        }
+                        case '`':{
+                            const startIndex = c
+                            c++
+                            const execArray = /^(?:\\[\s\S]|[\s\S])*?`/.exec(str.slice(c))
                             if (!execArray) {
                                 continue
                             }

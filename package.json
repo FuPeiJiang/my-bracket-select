@@ -23,8 +23,7 @@
 		]
 	},
 	"scripts": {
-		"lint": "eslint .",
-		"install": "vsce package -o my-bracket-select.vsix && code --install-extension my-bracket-select.vsix"
+		"ext": "vsce package -o my-bracket-select.vsix && code --install-extension my-bracket-select.vsix"
 	},
 	"devDependencies": {
 		"@types/node": "16.x",

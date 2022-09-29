@@ -32,19 +32,19 @@ function activate(context) {
 			const offset_active = activeEditor.document.offsetAt(selections[i].active)
 			const offset_anchor = activeEditor.document.offsetAt(selections[i].anchor)
 
-			const startEnd = searchRange(ranges, offset_active)
+			let smaller
+			let bigger
+			if (offset_anchor < offset_active) {
+				smaller = offset_anchor, bigger = offset_active
+			} else {
+				smaller = offset_active, bigger = offset_anchor
+			}
+			const startEnd = searchRange(ranges, smaller, bigger)
 
 			if (startEnd) {
 				let newActivePosition
 				let newAnchorPosition
 
-				let smaller
-				let bigger
-				if (offset_anchor < offset_active) {
-					smaller = offset_anchor, bigger = offset_active
-				} else {
-					smaller = offset_active, bigger = offset_anchor
-				}
 
 				if (smaller === startEnd[0] + 1 && bigger === startEnd[1] - 1) {
 					newAnchorPosition = activeEditor.document.positionAt(startEnd[5]), newActivePosition = activeEditor.document.positionAt(startEnd[6])

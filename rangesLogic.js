@@ -499,7 +499,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
 
 }
 
-exports.searchRange = function searchRange(ranges, offset) {
+exports.searchRange = function searchRange(ranges, smaller, bigger) {
     if (!ranges.length) {
         return false
     }
@@ -511,7 +511,7 @@ exports.searchRange = function searchRange(ranges, offset) {
     let validArr= false
 
     while (true) {
-        if (offset < childArr[mid][0]) {
+        if (smaller < childArr[mid][0]) {
             //search left
             if (low === high) {
                 break
@@ -519,7 +519,7 @@ exports.searchRange = function searchRange(ranges, offset) {
             high = mid
             mid = Math.trunc((low + high) / 2)
 
-        } else if (offset > childArr[mid][0] && offset < childArr[mid][1]) {
+        } else if (smaller > childArr[mid][0] && bigger < childArr[mid][1]) {
             validArr = childArr[mid]
             if (!validArr[2].length) {
                 break
@@ -529,7 +529,7 @@ exports.searchRange = function searchRange(ranges, offset) {
             low = 0
             high = childArr.length - 1
             mid = Math.trunc((low + high) / 2)
-        } else if (offset > childArr[mid][1]) {
+        } else if (smaller > childArr[mid][1]) {
             //search right
             if (low === high) {
                 break

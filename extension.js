@@ -34,30 +34,29 @@ function activate(context) {
 
 			const startEnd = searchRange(ranges, offset_active)
 
-			let newActivePosition
-			let newAnchorPosition
-			if (offset_anchor < offset_active) {
-				// offset_start = offset_anchor
-				// offset_end = offset_active
-				// reversed
-				if (offset_anchor === startEnd[0] + 1 && offset_active === startEnd[1] - 1) {
-					newAnchorPosition = activeEditor.document.positionAt(startEnd[0]), newActivePosition = activeEditor.document.positionAt(startEnd[1])
-				} else {
-					newAnchorPosition = activeEditor.document.positionAt(startEnd[0] + 1), newActivePosition = activeEditor.document.positionAt(startEnd[1] - 1)
-				}
-			} else {
-				// offset_start = offset_active
-				// offset_end = offset_anchor
-				// not reversed
-				if (offset_active === startEnd[0] + 1 && offset_anchor === startEnd[1] - 1) {
-					newAnchorPosition = activeEditor.document.positionAt(startEnd[1]), newActivePosition = activeEditor.document.positionAt(startEnd[0])
-				} else {
-					newAnchorPosition = activeEditor.document.positionAt(startEnd[1] - 1), newActivePosition = activeEditor.document.positionAt(startEnd[0] + 1)
-				}
-			}
-
 			if (startEnd) {
-				newSelections.push(new vscode.Selection(newAnchorPosition, newActivePosition))
+				let newActivePosition
+				let newAnchorPosition
+
+				let smaller
+				let bigger
+				if (offset_anchor < offset_active) {
+					smaller = offset_anchor, bigger = offset_active
+				} else {
+					smaller = offset_active, bigger = offset_anchor
+				}
+
+				if (smaller === startEnd[0] + 1 && bigger === startEnd[1] - 1) {
+					newAnchorPosition = activeEditor.document.positionAt(startEnd[5]), newActivePosition = activeEditor.document.positionAt(startEnd[6])
+				} else {
+					newAnchorPosition = activeEditor.document.positionAt(startEnd[3]), newActivePosition = activeEditor.document.positionAt(startEnd[4])
+				}
+
+				if (offset_anchor < offset_active) {
+					newSelections.push(new vscode.Selection(newAnchorPosition, newActivePosition))
+				} else {
+					newSelections.push(new vscode.Selection(newActivePosition, newAnchorPosition))
+				}
 			} else {
 				newSelections.push(selections[i])
 			}

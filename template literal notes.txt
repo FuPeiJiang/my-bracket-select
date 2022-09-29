@@ -1,0 +1,11 @@
+outer:
+while
+switch mode
+    case "normal":
+        while
+        switch
+            mode = "inside template literal"
+            continue outer
+    case "inside template literal":
+        while
+        switch

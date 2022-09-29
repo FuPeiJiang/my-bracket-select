@@ -25,7 +25,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                                 continue
                             }
                             const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
+                            childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
                             c = lastIndex
                             continue
                         }
@@ -37,7 +37,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                                 continue
                             }
                             const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
+                            childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
                             c = lastIndex
                             continue
                         }
@@ -71,8 +71,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                         case '[':
                         case '{':
                             const tempChildArr = []
-                            const tempArr = [c, null, tempChildArr]
-                            childArr.push(tempArr)
+                            childArr.push([c, null, tempChildArr, c + 1, null, c, null])
                             stack.push(childArr)
                             childArr = tempChildArr
                             c++
@@ -87,6 +86,8 @@ exports.getGetRanges = function getGetRanges(languageId) {
                             }
                             childArr = stack.pop()
                             childArr[childArr.length - 1][1] = c
+                            childArr[childArr.length - 1][4] = c - 1
+                            childArr[childArr.length - 1][6] = c
                             continue
                         default:
                             c++
@@ -118,7 +119,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                                 continue
                             }
                             const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
+                            childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
                             c = lastIndex
                             continue
                         }
@@ -130,7 +131,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                                 continue
                             }
                             const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
+                            childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
                             c = lastIndex
                             continue
                         }
@@ -142,7 +143,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                                 continue
                             }
                             const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
+                            childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
                             c = lastIndex
                             continue
                         }
@@ -176,8 +177,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                         case '[':
                         case '{':
                             const tempChildArr = []
-                            const tempArr = [c, null, tempChildArr]
-                            childArr.push(tempArr)
+                            childArr.push([c, null, tempChildArr, c + 1, null, c, null])
                             stack.push(childArr)
                             childArr = tempChildArr
                             c++
@@ -192,6 +192,8 @@ exports.getGetRanges = function getGetRanges(languageId) {
                             }
                             childArr = stack.pop()
                             childArr[childArr.length - 1][1] = c
+                            childArr[childArr.length - 1][4] = c - 1
+                            childArr[childArr.length - 1][6] = c
                             continue
                         default:
                             c++
@@ -223,7 +225,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                                 continue
                             }
                             const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
+                            childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
                             c = lastIndex
                             continue
                         }
@@ -235,7 +237,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                                 continue
                             }
                             const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
+                            childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
                             c = lastIndex
                             continue
                         }
@@ -247,7 +249,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                                 continue
                             }
                             const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
+                            childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
                             c = lastIndex
                             continue
                         }
@@ -269,8 +271,7 @@ exports.getGetRanges = function getGetRanges(languageId) {
                         case '[':
                         case '{':
                             const tempChildArr = []
-                            const tempArr = [c, null, tempChildArr]
-                            childArr.push(tempArr)
+                            childArr.push([c, null, tempChildArr, c + 1, null, c, null])
                             stack.push(childArr)
                             childArr = tempChildArr
                             c++
@@ -285,6 +286,8 @@ exports.getGetRanges = function getGetRanges(languageId) {
                             }
                             childArr = stack.pop()
                             childArr[childArr.length - 1][1] = c
+                            childArr[childArr.length - 1][4] = c - 1
+                            childArr[childArr.length - 1][6] = c
                             continue
                         default:
                             c++
@@ -305,99 +308,188 @@ exports.getGetRanges = function getGetRanges(languageId) {
                 let childArr = []
                 const stack = []
 
-                while (c < len) {
-                    switch (str[c]) {
-                        // strings
-                        case '"':{
-                            const startIndex = c
-                            c++
-                            const execArray = /^(?:\\.|.)*?"/.exec(str.slice(c))
-                            if (!execArray) {
-                                continue
-                            }
-                            const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
-                            c = lastIndex
-                            continue
-                        }
-                        case '\'':{
-                            const startIndex = c
-                            c++
-                            const execArray = /^(?:\\.|.)*?'/.exec(str.slice(c))
-                            if (!execArray) {
-                                continue
-                            }
-                            const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
-                            c = lastIndex
-                            continue
-                        }
-                        case '`':{
-                            const startIndex = c
-                            c++
-                            const execArray = /^(?:\\[\s\S]|[\s\S])*?`/.exec(str.slice(c))
-                            if (!execArray) {
-                                continue
-                            }
-                            const lastIndex = execArray[0].length + c
-                            childArr.push([startIndex, lastIndex, []])
-                            c = lastIndex
-                            continue
-                        }
-                        // comments
-                        case '/':
-                            c++
-                            switch (str[c]) {
-                                case '/':{
-                                    const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
-                                    c = lastIndex
-                                    continue
-                                }
-                                case '*':{
-                                    const lastIndex = /[\s\S]*?\*\//.exec(str.slice(c))[0].length + c
-                                    c = lastIndex
-                                    continue
-                                }
-                                default:{
-                                    //regex
-                                    const execArray = /^(?:\\.|.)*?\//.exec(str.slice(c))
-                                    if (!execArray) {
+                let mode = 0 //0: "normal", 1: "inside template literal", 2: "inside ${}"
+                outer:
+                while (true) {
+                    switch (mode) {
+                        case 0:
+                        case 2:
+                            while (c < len) {
+                                switch (str[c]) {
+                                    // strings
+                                    case '"':{
+                                        const startIndex = c
+                                        c++
+                                        const execArray = /^(?:\\.|.)*?"/.exec(str.slice(c))
+                                        if (!execArray) {
+                                            continue
+                                        }
+                                        const lastIndex = execArray[0].length + c
+                                        childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
+                                        c = lastIndex
                                         continue
                                     }
-                                    const startIndex = c - 1
-                                    const lastIndex = execArray[0].length + c
-                                    childArr.push([startIndex, lastIndex, []])
-                                    c = lastIndex
-                                    continue
+                                    case '\'':{
+                                        const startIndex = c
+                                        c++
+                                        const execArray = /^(?:\\.|.)*?'/.exec(str.slice(c))
+                                        if (!execArray) {
+                                            continue
+                                        }
+                                        const lastIndex = execArray[0].length + c
+                                        childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
+                                        c = lastIndex
+                                        continue
+                                    }
+                                    case '`':{
+                                        const tempChildArr = []
+                                        const tempArr = [c, null, tempChildArr, c + 1, null, c, null, mode]
+                                        childArr.push(tempArr)
+                                        stack.push(childArr)
+                                        childArr = tempChildArr
+                                        c++
+
+                                        mode = 1
+                                        continue outer
+                                    }
+                                    // comments
+                                    case '/':
+                                        c++
+                                        switch (str[c]) {
+                                            case '/':{
+                                                const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
+                                                c = lastIndex
+                                                continue
+                                            }
+                                            case '*':{
+                                                const lastIndex = /[\s\S]*?\*\//.exec(str.slice(c))[0].length + c
+                                                c = lastIndex
+                                                continue
+                                            }
+                                            default:{
+                                                //regex
+                                                const execArray = /^(?:\\.|.)*?\//.exec(str.slice(c))
+                                                if (!execArray) {
+                                                    continue
+                                                }
+                                                const startIndex = c - 1
+                                                const lastIndex = execArray[0].length + c
+                                                childArr.push([startIndex, lastIndex, [], startIndex + 1, lastIndex - 1, startIndex, lastIndex])
+                                                c = lastIndex
+                                                continue
+                                            }
+                                        }
+                                    // brackets
+                                    case '(':
+                                    case '[':
+                                        const tempChildArr = []
+                                        const tempArr = [c, null, tempChildArr, c + 1, null, c, null]
+                                        childArr.push(tempArr)
+                                        stack.push(childArr)
+                                        childArr = tempChildArr
+                                        c++
+                                        continue
+                                    case '{':{
+                                        const tempChildArr = []
+                                        const tempArr = [c, null, tempChildArr, c + 1, null, c, null, 0] //tempArr[7] is mode
+                                        childArr.push(tempArr)
+                                        stack.push(childArr)
+                                        childArr = tempChildArr
+                                        c++
+                                        continue
+                                    }
+                                    case ')':
+                                    case ']':
+                                        c++
+                                        if (!stack.length) {
+                                            console.log(`more ")" than "(": ${c}`)
+                                            continue
+                                        }
+                                        childArr = stack.pop()
+                                        childArr[childArr.length - 1][1] = c
+                                        childArr[childArr.length - 1][4] = c - 1
+                                        childArr[childArr.length - 1][6] = c
+                                        continue
+                                    case '}':
+                                        c++
+                                        if (!stack.length) {
+                                            console.log(`more ")" than "(": ${c}`)
+                                            continue
+                                        }
+                                        childArr = stack.pop()
+                                        childArr[childArr.length - 1][1] = c
+                                        childArr[childArr.length - 1][4] = c - 1
+                                        childArr[childArr.length - 1][6] = c
+                                        if (childArr[childArr.length - 1][7] !== mode) {
+                                            mode = childArr[childArr.length - 1][7]
+                                            if (mode===1) {
+                                                if (!stack.length) {
+                                                    console.log(`more ")" than "(": ${c}`)
+                                                    continue outer
+                                                }
+                                                childArr = stack.pop()
+                                                childArr[childArr.length - 1][1] = c
+                                                childArr[childArr.length - 1][4] = c
+                                                childArr[childArr.length - 1][6] = c
+                                            }
+                                            continue outer
+                                        }
+                                        continue
+                                    default:
+                                        c++
+                                        continue
                                 }
                             }
-                        // brackets
-                        case '(':
-                        case '[':
-                        case '{':
-                            const tempChildArr = []
-                            const tempArr = [c, null, tempChildArr]
-                            childArr.push(tempArr)
-                            stack.push(childArr)
-                            childArr = tempChildArr
-                            c++
-                            continue
-                        case ')':
-                        case ']':
-                        case '}':
-                            c++
-                            if (!stack.length) {
-                                console.log(`more ")" than "(": ${c}`)
-                                continue
-                            }
-                            childArr = stack.pop()
-                            childArr[childArr.length - 1][1] = c
-                            continue
-                        default:
-                            c++
-                            continue
+                            break
+                        case 1:
+                            while (c < len) {
+                                switch (str[c]) {
+                                    case '$':
+                                        if (c + 1 < len && str[c + 1] === "{") {
+                                            const tempChildArr = []
+                                            const tempArr = [c, null, tempChildArr, c, null, c, null, true] //tempArr[7] is mode
+                                            childArr.push(tempArr)
+                                            stack.push(childArr)
+                                            childArr = tempChildArr
+                                            {
+                                                c++
+                                                const tempChildArr = []
+                                                const tempArr = [c, null, tempChildArr, c + 1, null, c - 1, null, 1] //tempArr[7] is mode
+                                                childArr.push(tempArr)
+                                                stack.push(childArr)
+                                                childArr = tempChildArr
+                                            }
+                                            c++
+                                            mode = 0
+                                            continue outer
+                                        }
+                                    case '`':
+                                        c++
+                                        if (!stack.length) {
+                                            console.log(`more ")" than "(": ${c}`)
+                                            continue
+                                        }
+                                        childArr = stack.pop()
+                                        childArr[childArr.length - 1][1] = c
+                                        childArr[childArr.length - 1][4] = c - 1
+                                        childArr[childArr.length - 1][6] = c
+                                        mode = childArr[childArr.length - 1][7]
+
+                                        continue outer
+                                    case '\\':
+                                        c+=2
+                                        continue
+                                    default:
+                                        c++
+                                        continue
+                                    }
+                                }
+                            break
                     }
+                    break
                 }
+
+
 
                 return childArr
             }

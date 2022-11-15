@@ -23,11 +23,11 @@
 		]
 	},
 	"scripts": {
-		"ext": "vsce package -o my-bracket-select.vsix && code --install-extension my-bracket-select.vsix"
+		"c": "node build/terser_and_copy_to_extensions_folder.mjs"
 	},
 	"devDependencies": {
 		"@types/node": "16.x",
 		"@types/vscode": "^1.69.0",
-		"eslint": "^8.18.0"
+		"terser": "^5.15.1"
 	}
 }

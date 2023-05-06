@@ -125,11 +125,6 @@ function getGetRanges(languageId) {
 						case '/':
 							c++
 							switch (str[c]) {
-								case '/': {
-									const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
-									c = lastIndex
-									continue
-								}
 								case '*': {
 									const lastIndex = /[\s\S]*?\*\//.exec(str.slice(c))[0].length + c
 									c = lastIndex
@@ -231,11 +226,6 @@ function getGetRanges(languageId) {
 						case '/':
 							c++
 							switch (str[c]) {
-								case '/': {
-									const lastIndex = /.*$/m.exec(str.slice(c))[0].length + c
-									c = lastIndex
-									continue
-								}
 								case '*': {
 									const lastIndex = /[\s\S]*?\*\//.exec(str.slice(c))[0].length + c
 									c = lastIndex

@@ -555,6 +555,8 @@ function getGetRanges(languageId) {
 											mode = 0
 											continue outer
 										}
+										c++
+										continue
 									case '`':
 										c++
 										if (!stack.length) {

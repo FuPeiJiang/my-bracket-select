@@ -1,4 +1,4 @@
-import fs from 'fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { minify } from "terser";
 import { homedir } from "os";
 
@@ -9,14 +9,14 @@ async function main() {
     if (process.platform === "win32") {
         targetFolder = `${process.env.USERPROFILE}/.vscode/extensions/${folderName}`
     } else {
-        targetFolder = `${homedir()}/.vscode/extensions/${folderName}`
+        targetFolder = `${homedir()}/.vscode-oss/extensions/${folderName}`
     }
-    if ( !fs.existsSync( targetFolder ) ) {
-        fs.mkdirSync( targetFolder, { recursive: true } )
+    if ( !existsSync( targetFolder ) ) {
+        mkdirSync( targetFolder, { recursive: true } )
     }
 
-    const obj = JSON.parse(fs.readFileSync("package.json").toString())
-    fs.writeFileSync(`${targetFolder}/package.json`,JSON.stringify({
+    const obj = JSON.parse(readFileSync("package.json").toString())
+    writeFileSync(`${targetFolder}/package.json`,JSON.stringify({
         name: obj.name,
         version: obj.version,
         engines: obj.engines,
@@ -25,7 +25,7 @@ async function main() {
         contributes: obj.contributes,
     }))
 
-    const input = fs.readFileSync("extension.js").toString()
+    const input = readFileSync("extension.js").toString()
 
     // const result1 = await minify(input, {
     //     compress: {
@@ -105,18 +105,18 @@ async function main() {
 
     // console.log(`${targetFolder}/extension.js`)
 
-    // fs.writeFileSync(`${targetFolder}/extension.js`, result.code)
-    // fs.writeFileSync(`${targetFolder}/extension.js`, result2.code.replace(/let ([^=]*[,;])+|let |const /g, ""))
-    // fs.writeFileSync(`${targetFolder}/extension.js`, result1.code.replace(/let ([^=]*[,;])+|let |const /g, ""))
-    // fs.writeFileSync(`${targetFolder}/extension.js`, result2.code.replace(/varz ([^=]*[,;])+|var |const /g, ""))
-    // fs.writeFileSync(`${targetFolder}/extension.js`, result2.code.replace(/const /g, ""))
+    // writeFileSync(`${targetFolder}/extension.js`, result.code)
+    // writeFileSync(`${targetFolder}/extension.js`, result2.code.replace(/let ([^=]*[,;])+|let |const /g, ""))
+    // writeFileSync(`${targetFolder}/extension.js`, result1.code.replace(/let ([^=]*[,;])+|let |const /g, ""))
+    // writeFileSync(`${targetFolder}/extension.js`, result2.code.replace(/varz ([^=]*[,;])+|var |const /g, ""))
+    // writeFileSync(`${targetFolder}/extension.js`, result2.code.replace(/const /g, ""))
     // const output1 = result2.code.replace(/const /g, "")
     const output2 = result2.code.replace(/const /g, "let ")
     // console.log(input.length)
     // console.log(output1.length)
     // console.log(output2.length)
-    fs.writeFileSync(`${targetFolder}/extension.js`, output2)
-    // fs.writeFileSync(`${targetFolder}/extension.js`, result1.code)
+    writeFileSync(`${targetFolder}/extension.js`, output2)
+    // writeFileSync(`${targetFolder}/extension.js`, result1.code)
 
 }
 main()

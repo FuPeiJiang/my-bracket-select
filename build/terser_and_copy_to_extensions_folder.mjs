@@ -1,5 +1,6 @@
 import fs from 'fs'
 import { minify } from "terser";
+import { homedir } from "os";
 
 const folderName = "undefined.my-bracket-select-0.0.1"
 
@@ -8,7 +9,7 @@ async function main() {
     if (process.platform === "win32") {
         targetFolder = `${process.env.USERPROFILE}/.vscode/extensions/${folderName}`
     } else {
-        targetFolder = `~/.vscode/extensions/${folderName}`
+        targetFolder = `${homedir()}/.vscode/extensions/${folderName}`
     }
     if ( !fs.existsSync( targetFolder ) ) {
         fs.mkdirSync( targetFolder, { recursive: true } )

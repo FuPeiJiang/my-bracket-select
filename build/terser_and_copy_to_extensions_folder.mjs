@@ -11,7 +11,7 @@ async function main() {
         targetFolder = `~/.vscode/extensions/${folderName}`
     }
     if ( !fs.existsSync( targetFolder ) ) {
-        fs.mkdirSync( targetFolder )
+        fs.mkdirSync( targetFolder, { recursive: true } )
     }
 
     const obj = JSON.parse(fs.readFileSync("package.json").toString())
